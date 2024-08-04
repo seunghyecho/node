@@ -8,6 +8,8 @@ const multer = require("multer");
 const fs = require("fs");
 
 dotenv.config();
+const indexRouter = require("./routes");
+const userRouter = require("./routes/user");
 const app = express();
 
 // 서버 시작전에 먼저 시작
@@ -71,6 +73,7 @@ app.use(
     name: "connect.sid",
   })
 );
+
 app.use("/", (req, res, next) => {
   if (req.session.id) {
     // 로그인 했다
@@ -132,17 +135,23 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "./index.html"));
 });
 
+app.use("/", indexRouter);
+app.use("/user", userRouter);
+
 app.post("/", (req, res) => {
   res.send("hello express!");
 });
 
 // 와일드카드 라우트
-app.get("*", (req, res) => {
-  res.send("hello wildcard!");
-});
+// app.get("*", (req, res) => {
+//   res.send("hello wildcard!");
+// });
 
 app.use((req, res, next) => {
-  res.send("404 처리"); // .status(200) 기본
+  res.status(404).send("Not Found"); // .status(200) 기본
+});
+app.use((err, req, res, next) => {
+  res.status(500).send(err.message); // .status(200) 기본
 });
 
 // 에러 미들웨어
@@ -152,5 +161,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(app.get("port"), () => {
-  console.log("Express 서버 실행");
+  console.log(app.get("port"), "번 포트에서 Express 서버 실행");
 });
