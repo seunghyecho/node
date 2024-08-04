@@ -1,3 +1,4 @@
+const dotenv = require("dotenv");
 const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
@@ -5,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session"); //개인의 저장공간을 만들어줌
 const multer = require("multer");
 const fs = require("fs");
+
+dotenv.config();
 const app = express();
 
 // 서버 시작전에 먼저 시작
@@ -48,16 +51,20 @@ app.post(
     res.send("ok");
   }
 );
+
 // 서비스에 맞게 순서 조정
 app.set("port", process.env.PORT || 3000);
 // app.use(morgan("combined"));
 app.use(morgan("dev"));
-app.use(cookieParser("seunghyepassword")); //secret: "seunghyepassword" 와 동일하게 맞춰줌
+
+app.use(cookieParser(process.env.COOKIE_SECRET));
+// app.use(cookieParser("seunghyepassword")); //secret: "seunghyepassword" 와 동일하게 맞춰줌
+
 app.use(
   session({
     resave: false,
     saveUninitialized: false,
-    secret: "seunghyepassword",
+    secret: process.env.COOKIE_SECRET,
     cookie: {
       httpOnly: true,
     },
