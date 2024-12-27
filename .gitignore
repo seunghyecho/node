@@ -4,6 +4,8 @@ node_modules
 /publish/node_modules
 /express/node_modules
 # env
+*/config.json
+*.json
 */.env
 */package.json
 */package-lock.json

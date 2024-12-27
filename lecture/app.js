@@ -6,6 +6,8 @@ const session = require("express-session"); // 로그인의 세션을 사용하�
 const nunjucks = require("nunjucks"); // 노드에서 사용하는 템플릿 엔진
 const dotenv = require("dotenv"); // 설정 파일
 
+const { sequelize } = require("./models");
+
 // process.env.COOKIE_SECRET 없음
 dotenv.config(); // process.env 안에 들어감, 최대한 위로 올라가 있어야 함
 // process.env.COOKIE_SECRET 있음
@@ -19,6 +21,15 @@ nunjucks.configure("views", {
   express: app,
   watch: true,
 });
+
+sequelize
+  .sync({ force: false }) //개발시
+  .then(() => {
+    console.log("db 연결 성공");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public"))); // public 폴더(만 허용)를 static 폴더로 만듦
