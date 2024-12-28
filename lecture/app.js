@@ -5,6 +5,7 @@ const path = require("path"); // 노드 내장 모듈
 const session = require("express-session"); // 로그인의 세션을 사용하기 위한
 const nunjucks = require("nunjucks"); // 노드에서 사용하는 템플릿 엔진
 const dotenv = require("dotenv"); // 설정 파일
+const passport = require("passport"); // passport-local : email 로그인, passport-kakao : kakao 로그인
 
 const { sequelize } = require("./models");
 
@@ -12,8 +13,11 @@ const { sequelize } = require("./models");
 dotenv.config(); // process.env 안에 들어감, 최대한 위로 올라가 있어야 함
 // process.env.COOKIE_SECRET 있음
 const pageRouter = require("./routes/page");
+const authRouter = require("./routes/auth");
+const passportConfig = require("./passport");
 
 const app = express();
+passportConfig();
 app.set("port", process.env.PORT || 8001);
 app.set("view engine", "html"); // 페이지들 확장자는 html(넌적스)
 nunjucks.configure("views", {
@@ -33,8 +37,8 @@ sequelize
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public"))); // public 폴더(만 허용)를 static 폴더로 만듦
-app.use(express.json()); // body parser
-app.use(express.urlencoded({ extended: false })); // body parser
+app.use(express.json()); // body parser, req.body를 ajax json 요청으로부터
+app.use(express.urlencoded({ extended: false })); // body parser, req.body form 으로부터
 app.use(cookieParser(process.env.COOKIE_SECRET)); // cookie parser
 app.use(
   session({
@@ -47,8 +51,11 @@ app.use(
     },
   })
 );
+app.use(passport.initialize()); // passport 미들웨어는 반드시 세션 미들웨어 아래에 넣기, req.user, req.login, req.isAuthenticate, req.logout 가 여기서 생김
+app.use(passport.session()); // passport 미들웨어는 반드시 세션 미들웨어 아래에 넣기, connect.sid 라는 이름으로 세션 쿠키가 브라우저로 전송
 
 app.use("/", pageRouter);
+app.use("/auth", authRouter);
 
 app.use((req, res, next) => {
   //404 not found

@@ -6,17 +6,19 @@ const {
   renderJoin,
   renderMain,
 } = require("../controllers/page");
+const { isLoggedIn, isNotLoggedIn } = require("../middlewares");
 
 router.use((req, res, next) => {
-  res.locals.user = null;
+  // res.locals.user = null;
+  res.locals.user = req.user; // req.user 에는 사용자 정보 가 있음
   res.locals.followerCount = 0;
   res.locals.followingCount = 0;
   res.locals.followingIdList = [];
   next(); // 미들웨어는 next 호출해야 다음으로 넘어감
 });
 
-router.get("/profile", renderProfile);
-router.get("/join", renderJoin);
+router.get("/profile", isLoggedIn, renderProfile);
+router.get("/join", isNotLoggedIn, renderJoin);
 router.get("/", renderMain);
 
 module.exports = router;
