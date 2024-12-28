@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const passport = require("passport");
 const User = require("../models/user");
 
 exports.join = async (req, res, next) => {
@@ -20,5 +21,31 @@ exports.join = async (req, res, next) => {
     next(error);
   }
 };
-exports.login = () => {};
-exports.logout = () => {};
+exports.login = (req, res, next) => {
+  passport.authenticate("local", (authError, user, info) => {
+    // 최종적으로 done(서버실패, 성공유저, 로직실패) 실행되는 부분
+    if (authError) {
+      // 서버실패
+      console.error(authError);
+      return next(authError);
+    }
+    if (!user) {
+      // 로직실패
+      return res.redirect(`/?loginError=${info.message}`);
+    }
+    return req.login(user, (loginError) => {
+      // 로그인 성공
+      if (loginError) {
+        console.error(loginError);
+        return next(loginError);
+      }
+      return res.redirect("/");
+    });
+  })(req, res, next); // 미들웨어 확장 패턴
+};
+exports.logout = () => {
+  // 세션쿠키 {123123123 : 1} 를  { } 로 없애버림. 브라우저 connect.sid가 남아있어도
+  req.logout(() => {
+    res.redirect("/");
+  });
+};

@@ -14,6 +14,7 @@ router.use((req, res, next) => {
   res.locals.followerCount = 0;
   res.locals.followingCount = 0;
   res.locals.followingIdList = [];
+  // req.session; connect.sid 쿠키로 세션에서 찾을 때 req.session이 생성됨.
   next(); // 미들웨어는 next 호출해야 다음으로 넘어감
 });
 

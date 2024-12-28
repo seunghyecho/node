@@ -53,13 +53,14 @@ app.use(
 );
 app.use(passport.initialize()); // passport 미들웨어는 반드시 세션 미들웨어 아래에 넣기, req.user, req.login, req.isAuthenticate, req.logout 가 여기서 생김
 app.use(passport.session()); // passport 미들웨어는 반드시 세션 미들웨어 아래에 넣기, connect.sid 라는 이름으로 세션 쿠키가 브라우저로 전송
+// 브라우저 connect.sid=123123123123 가 서버로 오면 쿠키파서로 감
 
 app.use("/", pageRouter);
 app.use("/auth", authRouter);
 
 app.use((req, res, next) => {
   //404 not found
-  const error = new Error(`${req.mothod} ${req.url} 라우터가 없습니다.`);
+  const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;
   next(error); // 미들웨어는 next 호출해야 다음으로 넘어감
 });
