@@ -14,6 +14,7 @@ dotenv.config(); // process.env 안에 들어감, 최대한 위로 올라가 있
 // process.env.COOKIE_SECRET 있음
 const pageRouter = require("./routes/page");
 const authRouter = require("./routes/auth");
+const postRouter = require("./routes/post");
 const passportConfig = require("./passport");
 
 const app = express();
@@ -37,6 +38,7 @@ sequelize
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public"))); // public 폴더(만 허용)를 static 폴더로 만듦
+app.use("/img", express.static(path.join(__dirname, "uploads"))); // 이미지 업로드 시 경로 설정해야 FE 에서 이미지가 보임.
 app.use(express.json()); // body parser, req.body를 ajax json 요청으로부터
 app.use(express.urlencoded({ extended: false })); // body parser, req.body form 으로부터
 app.use(cookieParser(process.env.COOKIE_SECRET)); // cookie parser
@@ -57,6 +59,7 @@ app.use(passport.session()); // passport 미들웨어는 반드시 세션 미들
 
 app.use("/", pageRouter);
 app.use("/auth", authRouter);
+app.use("/post", postRouter);
 
 app.use((req, res, next) => {
   //404 not found
