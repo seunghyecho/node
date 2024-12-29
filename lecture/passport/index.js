@@ -12,8 +12,22 @@ module.exports = () => {
 
   passport.deserializeUser((id, done) => {
     // id : 1 의 사용자를 조회함.
-    User.findOne({ where: { id } })
-      .then((user) => done(null, user)) // req.user
+    User.findOne({
+      where: { id },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nick"],
+          as: "Followers",
+        }, // 팔로잉
+        {
+          model: User,
+          attributes: ["id", "nick"],
+          as: "Followings",
+        }, // 팔로워
+      ],
+    })
+      .then((user) => done(null, user)) // req.user, req.session
       .catch((err) => done(err));
   });
 

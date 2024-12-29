@@ -7,14 +7,19 @@ const {
   renderMain,
 } = require("../controllers/page");
 const { isLoggedIn, isNotLoggedIn } = require("../middlewares");
+const User = require("../models/user");
 
 router.use((req, res, next) => {
   // res.locals.user = null;
   res.locals.user = req.user; // req.user 에는 사용자 정보 가 있음
-  res.locals.followerCount = 0;
-  res.locals.followingCount = 0;
-  res.locals.followingIdList = [];
-  // req.session; connect.sid 쿠키로 세션에서 찾을 때 req.session이 생성됨.
+
+  // 1. await User.find : 직접 찾는 방법
+  // 2 deserializeUser 에서 가져오는 방법
+  res.locals.followerCount = req.user?.Followers?.length || 0; // req.user, 2.
+  res.locals.followingCount = req.user?.Followings?.length || 0; // 2.
+  res.locals.followingIdList = req.user?.Following?.map((f) => f.id) || []; // 2.
+
+  // req.session; connect.sid 쿠키로 세션에서 찾을 때 req.session이  생성됨.
   next(); // 미들웨어는 next 호출해야 다음으로 넘어감
 });
 

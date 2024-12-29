@@ -15,6 +15,7 @@ dotenv.config(); // process.env 안에 들어감, 최대한 위로 올라가 있
 const pageRouter = require("./routes/page");
 const authRouter = require("./routes/auth");
 const postRouter = require("./routes/post");
+const userRouter = require("./routes/user");
 const passportConfig = require("./passport");
 
 const app = express();
@@ -60,6 +61,7 @@ app.use(passport.session()); // passport 미들웨어는 반드시 세션 미들
 app.use("/", pageRouter);
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
+app.use("/user", userRouter);
 
 app.use((req, res, next) => {
   //404 not found
