@@ -47,7 +47,7 @@ exports.login = (req, res, next) => {
 // app.use(passport.authenticate("kakao"));
 // app.use((req, res, next) => passport.authenticate("kakao")(req, res, next));
 
-exports.logout = () => {
+exports.logout = (req, res, next) => {
   // 세션쿠키 {123123123 : 1} 를  { } 로 없애버림. 브라우저 connect.sid가 남아있어도
   req.logout(() => {
     res.redirect("/");
