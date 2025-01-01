@@ -19,3 +19,21 @@ exports.follow = async (req, res, next) => {
     next(error);
   }
 };
+
+// addFollowings addFollowing getFollowing setFollowing removeFollowing 등등
+exports.unfollow = async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user.id }, // 나를 먼저 찾기
+    });
+    if (user) {
+      await user.removeFollowing(parseInt(req.params.id, 10));
+      res.send("success");
+    } else {
+      res.status(404).send("no user");
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};

@@ -147,9 +147,18 @@ textarea {
 .twit-follow {
   padding: 1px 5px;
   background: #fff;
-  border: 1px solid silver;
+  border: 1px solid crimson;
   border-radius: 5px;
   color: crimson;
+  font-size: 12px;
+  cursor: pointer;
+}
+.twit-unfollow {
+  padding: 1px 5px;
+  background-color: crimson;
+  border: 1px solid crimson;
+  border-radius: 5px;
+  color: #fff;
   font-size: 12px;
   cursor: pointer;
 }
