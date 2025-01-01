@@ -1,4 +1,18 @@
 {% extends 'layout.html' %} {% block content %}
+<div>
+  <form id="profile-form">
+    <div class="input-group">
+      <label for="nick">닉네임</label>
+      <input id="nick" type="nick" name="nick" required autofocus />
+    </div>
+    <div class="input-group">
+      <label for="password">비밀번호</label>
+      <input id="password" type="password" name="password" required />
+    </div>
+    <button id="profile-btn" type="submit" class="btn">수정하기</button>
+  </form>
+</div>
+
 <div class="timeline">
   <div class="followings half">
     <h2>팔로잉 목록</h2>
@@ -13,4 +27,30 @@
     {% endfor %} {% endif %}
   </div>
 </div>
+{% endblock %} {% block script %}
+<script>
+  if (document.getElementById('profile-form')) {
+    document.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const config = {
+        headers: {
+          'content-type': 'application/json',
+        },
+      };
+
+      axios
+        .put('/user/{{user.id}}/profile', formData, config)
+        .then((res) => {
+          alert('프로필 정보가 수정되었습니다.');
+          location.reload();
+          // window.location.href = '/profile';
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    });
+  }
+</script>
 {% endblock %}

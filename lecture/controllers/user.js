@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
 // follow
@@ -31,6 +32,27 @@ exports.unfollow = async (req, res, next) => {
       res.send("success");
     } else {
       res.status(404).send("no user");
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.updateProfile = async (req, res, next) => {
+  console.log("req.body================", req.body);
+  const { nick, password } = req.body;
+  try {
+    const exUser = await User.findOne({ where: { id: req.user.id } });
+    const hash = await bcrypt.hash(password, 12);
+    if (exUser) {
+      exUser.update({
+        nick,
+        password: hash,
+      });
+      await exUser.save();
+
+      res.status(201).send();
     }
   } catch (error) {
     console.error(error);
