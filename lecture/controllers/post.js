@@ -29,10 +29,25 @@ exports.uploadPost = async (req, res, next) => {
           });
         })
       );
-      console.log("result", result);
+      // console.log("result", result);
       await post.addHashtags(result.map((r) => r[0]));
     }
     res.redirect("/");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.createLike = async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+
+    if (!post) {
+      return res.status(403).send("게시글이 존재하지 않습니다.");
+    }
+    await post.addLiker(req.user.id);
+    res.status(200).json({ postId: post.id, userId: req.user.id });
   } catch (error) {
     console.error(error);
     next(error);

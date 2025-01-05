@@ -29,6 +29,10 @@ class Post extends Sequelize.Model {
     db.Post.belongsTo(db.User);
     db.Post.belongsToMany(db.Hashtag, { through: "PostHashtag" });
     // db.sequelize.models.PostHashtag 직접 접근 시 사용하기
+    db.Post.belongsToMany(db.User, {
+      as: "Likers", // fe 에 전달할 객체의 key
+      through: "Like", // 포함시킬 db 의 table
+    }); // post.addLikers, 다대다 관계 (Like 이름설정,별칭: 좋아요누른사람)
   }
 }
 

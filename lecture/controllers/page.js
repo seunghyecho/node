@@ -13,12 +13,21 @@ exports.renderJoin = (req, res, next) => {
 exports.renderMain = async (req, res, next) => {
   try {
     const posts = await Post.findAll({
-      include: {
-        model: User,
-        attributes: ["id", "nick"],
-      },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nick"],
+        },
+        {
+          model: User,
+          // through: "Like", // DB 테이블 명
+          as: "Likers", // 프론트에 전달할 객체의 key
+          attributes: ["id"],
+        },
+      ],
       order: [["createdAt", "DESC"]], // 정렬
     });
+
     res.render("main", { title: "노드버드", twits: posts });
   } catch (error) {
     console.error(error);

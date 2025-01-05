@@ -4,7 +4,11 @@ const { isLoggedIn, isNotLoggedIn } = require("../middlewares");
 const fs = require("fs"); // 파일 조작
 const multer = require("multer");
 const path = require("path");
-const { afterUploadImage, uploadPost } = require("../controllers/post");
+const {
+  afterUploadImage,
+  uploadPost,
+  createLike,
+} = require("../controllers/post");
 
 try {
   fs.readdirSync("uploads");
@@ -31,4 +35,5 @@ router.post("/img", isLoggedIn, upload.single("img"), afterUploadImage); // isLo
 const upload2 = multer(); // upload 랑 설정이 다르기 때문에 새로 만들어 씀.
 router.post("/", isLoggedIn, upload2.none(), uploadPost); //  게시글 등록 : upload2.none() 이미지를 안올릴 경우
 
+router.post("/:postId/like", isLoggedIn, createLike);
 module.exports = router;

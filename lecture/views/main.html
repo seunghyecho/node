@@ -43,6 +43,7 @@
       user.id %}
       <button class="twit-follow">팔로우</button>
       <button class="twit-unfollow">언팔로우</button>
+      <button class="twit-like">좋아요{{twit.Likers.length}}</button>
       {% endif %}
       <div class="twit-content">{{twit.content}}</div>
       {% if twit.img %}
@@ -70,8 +71,9 @@
         });
     });
   }
-  document.querySelectorAll('.twit-follow').forEach(function(tag) {
 
+  // 팔로우 하기
+  document.querySelectorAll('.twit-follow').forEach(function(tag) {
     tag.addEventListener('click', function() {
       const myId = document.querySelector('#my-id');
       if (myId) {
@@ -80,7 +82,7 @@
           if (confirm('팔로잉하시겠습니까?')) {
             axios.post(`/user/${userId}/follow`)
               .then((res) => {
-                // console.log(res);
+                // console.log('팔로우',res);
                 location.reload();
               })
               .catch((err) => {
@@ -92,6 +94,7 @@
     });
   });
 
+  // 언팔로우 하기
   document.querySelectorAll('.twit-unfollow').forEach(function(tag) {
     tag.addEventListener('click', function() {
       const myId = document.querySelector('#my-id');
@@ -101,7 +104,31 @@
           if (confirm('팔로잉 취소 하시겠습니까?')) {
             axios.post(`/user/${userId}/unfollow`)
               .then((res) => {
-                // console.log(res);
+                // console.log('언팔로우',res);
+                location.reload();
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
+        }
+      }
+    });
+  });
+
+  // 좋아요
+  document.querySelectorAll('.twit-like').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const myId = document.querySelector('#my-id');
+      if (myId) {
+        const userId = btn.parentNode.querySelector('.twit-user-id').value;
+        const twitId = btn.parentNode.querySelector('.twit-id').value;
+        if (userId !== myId.value) {
+          if (confirm('좋아요?')) {
+            axios.post(`/post/${twitId}/like`)
+              .then((res) => {
+                // console.log('좋아요',res);
+                this.style.color='black';
                 location.reload();
               })
               .catch((err) => {
