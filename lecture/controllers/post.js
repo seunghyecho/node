@@ -46,8 +46,24 @@ exports.createLike = async (req, res, next) => {
     if (!post) {
       return res.status(403).send("게시글이 존재하지 않습니다.");
     }
-    await post.addLiker(req.user.id);
-    res.status(200).json({ postId: post.id, userId: req.user.id });
+
+    const hasLiked = await post.hasLiker(req.user.id);
+    if (hasLiked) {
+      await post.removeLikers(req.user.id);
+      return res.status(200).json({
+        message: "좋아요가 취소되었습니다.",
+        postId: post.id,
+        userId: req.user.id,
+      });
+    } else {
+      await post.addLiker(req.user.id);
+      // res.status(200).json({ postId: post.id, userId: req.user.id });
+      return res.status(200).json({
+        message: "좋아요가 추가되었습니다.",
+        postId: post.id,
+        userId: req.user.id,
+      });
+    }
   } catch (error) {
     console.error(error);
     next(error);

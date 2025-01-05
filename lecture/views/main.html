@@ -124,17 +124,15 @@
         const userId = btn.parentNode.querySelector('.twit-user-id').value;
         const twitId = btn.parentNode.querySelector('.twit-id').value;
         if (userId !== myId.value) {
-          if (confirm('좋아요?')) {
             axios.post(`/post/${twitId}/like`)
               .then((res) => {
                 // console.log('좋아요',res);
-                this.style.color='black';
+                // this.style.color='black';
                 location.reload();
               })
               .catch((err) => {
                 console.error(err);
               });
-          }
         }
       }
     });
