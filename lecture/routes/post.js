@@ -8,6 +8,7 @@ const {
   afterUploadImage,
   uploadPost,
   createLike,
+  deletePost,
 } = require("../controllers/post");
 
 try {
@@ -36,4 +37,6 @@ const upload2 = multer(); // upload 랑 설정이 다르기 때문에 새로 만
 router.post("/", isLoggedIn, upload2.none(), uploadPost); //  게시글 등록 : upload2.none() 이미지를 안올릴 경우
 
 router.post("/:postId/like", isLoggedIn, createLike);
+router.delete("/:postId", isLoggedIn, deletePost);
+
 module.exports = router;

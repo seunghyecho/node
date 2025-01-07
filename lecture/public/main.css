@@ -146,7 +146,8 @@ textarea {
 }
 .twit-follow,
 .twit-unfollow,
-.twit-like {
+.twit-like,
+.twit-delete {
   padding: 1px 5px;
   background: #fff;
   border: 1px solid silver;

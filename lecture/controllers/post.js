@@ -1,4 +1,5 @@
 const Post = require("../models/post");
+const User = require("../models/user");
 const HashTag = require("../models/hashtag");
 
 // afterUploadImage, uploadPost
@@ -62,6 +63,27 @@ exports.createLike = async (req, res, next) => {
         message: "좋아요가 추가되었습니다.",
         postId: post.id,
         userId: req.user.id,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.deletePost = async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (post) {
+      await post.destroy({
+        where: {
+          id: req.params.postId,
+          User: req.user.id,
+        },
+      });
+      return res.status(200).json({
+        message: "내 글이 삭제되었습니다.",
+        postId: post.id,
       });
     }
   } catch (error) {

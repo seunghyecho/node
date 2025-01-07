@@ -43,9 +43,10 @@
       user.id %}
       <button class="twit-follow">팔로우</button>
       <button class="twit-unfollow">언팔로우</button>
-      <button class="twit-like">좋아요{{twit.Likers.length}}</button>
+      <button class="twit-like">좋아요 {{twit.Likers.length}}</button>
       {% endif %}
       <div class="twit-content">{{twit.content}}</div>
+      <button class="twit-delete">삭제</button>
       {% if twit.img %}
       <div class="twit-img"><img src="{{twit.img}}" alt="섬네일" /></div>
       {% endif %}
@@ -58,7 +59,7 @@
   if (document.getElementById('img')) {
     document.getElementById('img').addEventListener('change', function(e) {
       const formData = new FormData();
-      console.log(this, this.files);
+      // console.log(this, this.files);
       formData.append('img', this.files[0]);
       axios.post('/post/img', formData)
         .then((res) => {
@@ -133,6 +134,33 @@
               .catch((err) => {
                 console.error(err);
               });
+        }
+      }
+    });
+  });
+
+  // 내글 삭제 twit-delete
+  document.querySelectorAll('.twit-delete').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const myId = document.querySelector('#my-id');
+      if (myId) {
+        const userId = btn.parentNode.querySelector('.twit-user-id').value;
+        const twitId = btn.parentNode.querySelector('.twit-id').value;
+        // console.log('내 글인가 ??', myId.value, userId);
+
+        if (myId.value === userId) {
+          if(confirm('삭제 하시겠습니까?')){
+            axios.delete(`/post/${twitId}`)
+            .then((res) => {
+              // console.log('내글 삭제',res);
+              location.reload();
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+          }
+        }else{
+          alert('삭제할 수 없는 글입니다.')
         }
       }
     });
