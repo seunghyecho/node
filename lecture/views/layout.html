@@ -9,10 +9,22 @@
   </head>
   <body>
     <div class="container">
+      <div class="logo">
+        <a href="/">
+          <img src="/images/logo.png" alt="TWIT" />
+        </a>
+      </div>
       <div class="profile-wrap">
         <div class="profile">
           {% if user and user.id %}
-          <div class="user-name">{{'안녕하세요! ' + user.nick + '님'}}</div>
+          <!-- <div class="user-name">{{'안녕하세요! ' + user.nick + '님'}}</div> -->
+          <div class="user-name">
+            안녕하세요!
+            <button class="user-nick">
+              <a href="/{{user.id}}">{{user.nick}}</a>
+            </button>
+            님
+          </div>
           <div class="half">
             <div>팔로잉</div>
             <div class="count following-count">{{followingCount}}</div>
@@ -49,11 +61,28 @@
     </div>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-      window.onload = () => {
-        if (new URL(location.href).searchParams.get('error')) {
-          alert(new URL(location.href).searchParams.get('error'));
-        }
-      };
+          window.onload = () => {
+            if (new URL(location.href).searchParams.get('error')) {
+              alert(new URL(location.href).searchParams.get('error'));
+            }
+          };
+
+      document.querySelectorAll('.user-nick').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const myId = document.querySelector('#my-id').value;
+          if (myId) {
+                axios.get(`/${myId}`)
+                .then((res) => {
+                  console.log('내글만 조회',res);
+                  // location.reload();
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+              }
+
+        });
+      });
     </script>
     {% block script %} {% endblock %}
   </body>

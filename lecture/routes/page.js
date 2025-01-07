@@ -6,6 +6,7 @@ const {
   renderJoin,
   renderMain,
   renderHashtag,
+  renderUserPost,
 } = require("../controllers/page");
 const { isLoggedIn, isNotLoggedIn } = require("../middlewares");
 const User = require("../models/user");
@@ -28,5 +29,6 @@ router.get("/profile", isLoggedIn, renderProfile);
 router.get("/join", isNotLoggedIn, renderJoin);
 router.get("/", renderMain);
 router.get("/hashtag", renderHashtag); // hashtag?hashtag=머시기
+router.get("/:userId", isLoggedIn, renderUserPost);
 
 module.exports = router;

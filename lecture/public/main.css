@@ -7,6 +7,9 @@ body {
   padding: 0;
   height: 100%;
 }
+a {
+  text-decoration: none;
+}
 .btn {
   display: inline-block;
   padding: 0 5px;
@@ -39,6 +42,18 @@ textarea {
     width: 800px;
     margin: 0 auto;
   }
+}
+.logo {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.logo a {
+  width: 50px;
+  height: 50px;
+}
+.logo img {
+  width: 100%;
 }
 .input-group {
   margin-bottom: 15px;
@@ -79,6 +94,15 @@ textarea {
   background: #fff;
 }
 .user-name {
+  font-weight: bold;
+  font-size: 18px;
+}
+.user-nick {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.user-nick a {
   font-weight: bold;
   font-size: 18px;
 }

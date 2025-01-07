@@ -35,6 +35,39 @@ exports.renderMain = async (req, res, next) => {
   }
 };
 
+exports.renderUserPost = async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        id: req.params.userId,
+      },
+    });
+    const posts = await Post.findAll({
+      where: { userId: req.params.userId },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nick"],
+        },
+        {
+          model: User,
+          // through: "Like", // DB 테이블 명
+          as: "Likers", // 프론트에 전달할 객체의 key
+          attributes: ["id"],
+        },
+      ],
+      order: [["createdAt", "DESC"]], // 정렬
+    });
+
+    if (user) {
+      res.render("main", { title: "내 글만", twits: posts });
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 // 계층적 호출 : 라우터 -> 컨트롤러(요청, 응답 앎) -> 서비스(요청, 응답 모름)
 
 exports.renderHashtag = async (req, res, next) => {
