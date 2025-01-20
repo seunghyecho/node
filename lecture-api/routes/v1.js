@@ -1,0 +1,11 @@
+const express = require("express");
+const { verifyToken } = require("../middlewares");
+const { createToken, tokenTest } = require("../controllers");
+
+const router = express.Router();
+
+// /v1/token
+router.post("/token", createToken); // req.body.clientSecret
+router.get("/test", verifyToken, tokenTest);
+
+module.exports = router;
