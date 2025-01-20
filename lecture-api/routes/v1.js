@@ -1,6 +1,6 @@
 const express = require("express");
 const { verifyToken } = require("../middlewares");
-const { createToken, tokenTest } = require("../controllers");
+const { createToken, tokenTest } = require("../controllers/v1");
 
 const router = express.Router();
 
