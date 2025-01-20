@@ -47,7 +47,8 @@ const request = async (req, api) => {
       delete req.session.jwt;
       return request(req, api); // 토큰 만료 시 재귀함수로 다시 토큰 발급되도록 실행
     }
-    throw error.response; // getMyPosts 또는 searchByHashtag 요청 실패 시 에러 확인 할 수 있도록 throw 를 사용
+    // throw error.response; // getMyPosts 또는 searchByHashtag 요청 실패 시 에러 확인 할 수 있도록 throw 를 사용
+    return error.response; // 에러가 안나고 호출된 api에서 res.json 으로 넘어가게 됨
   }
 };
 exports.getMyPosts = async (req, res, next) => {
