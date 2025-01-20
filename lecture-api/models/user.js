@@ -52,6 +52,7 @@ class User extends Sequelize.Model {
       through: "Follow",
     }); // 팔로잉
     db.User.belongsToMany(db.Post, { as: "Liked", through: "Like" });
+    db.User.hasMany(db.Domain); // 도메일 여러개 일 수 있음
   }
 }
 
