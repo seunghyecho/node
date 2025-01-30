@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "seunghyeCho",
   "license": "MIT",
@@ -27,6 +27,7 @@
     "sequelize-cli": "^6.6.2"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.1.9"
   }
 }
