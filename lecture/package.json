@@ -2,9 +2,9 @@
   "name": "nodebird",
   "version": "0.0.1",
   "description": "Use express",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "nodemon server.js",
     "test": "jest",
     "coverage": "jest --coverage"
   },
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
   }
 }

@@ -1,5 +1,5 @@
 // require 된 모델 커버리지 100 만들기 위한 test.js
-const { Sequelize } = require("sequelize");
+const Sequelize = require("sequelize");
 const User = require("./user");
 const config = require("../config/config.json")["test"];
 // sequelize 연결 설정 불러오기
@@ -24,7 +24,8 @@ describe("User 모델", () => {
       Post: {},
     };
     User.associate(db);
-    expect(db.User.hasMany).toBeCalledWith(db.Post);
-    expect(db.User.belongsToMany).toBeCalledTimes(2);
+    expect(db.User.hasMany).toHaveBeenCalledWith(db.Post);
+    // expect(db.User.belongsToMany).toHaveBeenCalledTimes(2);
+    expect(db.User.belongsToMany).toHaveBeenCalledTimes(3);
   });
 });
