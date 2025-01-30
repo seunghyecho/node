@@ -20,7 +20,10 @@ const basename = path.basename(__filename); // index.js
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
-      file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
+      file.indexOf(".") !== 0 &&
+      !file.includes("test") && // 테스트 파일 제외
+      file !== basename &&
+      file.slice(-3) === ".js"
     );
   })
   .forEach((file) => {
