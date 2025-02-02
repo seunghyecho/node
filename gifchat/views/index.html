@@ -6,6 +6,29 @@
   </head>
   <body>
     <div>f12를 눌러 console 탭과 network 탭을 확인하세요.</div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io.connect("http://localhost:8005",{
+        path:'/socket.io',
+        transports:['websocket'] //polling 방식을 시도 안할 경우, websocket만 진행하게 됨
+      })
+      socket.on('news',(data)=>{
+        console.log(data);
+        socket.emit('replay', "HEllo Node.js")
+      })
+    </script>
+  </body>
+</html>
+
+<!-- ws 모듈 -->
+<!-- <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>GIF 채팅방</title>
+  </head>
+  <body>
+    <div>f12를 눌러 console 탭과 network 탭을 확인하세요.</div>
     <script>
       const webSocket = new WebSocket("ws://localhost:8005")
       webSocket.onopen = function(){
@@ -17,4 +40,4 @@
       }
     </script>
   </body>
-</html>
+</html> -->
