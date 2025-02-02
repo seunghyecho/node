@@ -1,12 +1,17 @@
 const SocketIO = require("socket.io");
+const { removeRoom } = require("./services");
 
-module.exports = (server, app) => {
+module.exports = (server, app, sessionMiddleware) => {
   const io = SocketIO(server, { path: "/socket.io" }); //서버 만들어줌
   app.set("io", io);
   // express 에 값 저장할 수 있음. app.set : 전체에다가 저장. res.locals : 요청에다가 저장
   const room = io.of("/room"); // room 네임스페이스 전환
   const chat = io.of("/chat"); // chat 네임스페이스 전환
 
+  const wrap = (middleware) => (socket, next) =>
+    middleware(socket.request, {}, next);
+
+  chat.use(wrap(sessionMiddleware));
   //   네임스페이스 별로 다른 동작할 경우 구성하는 방법
   room.on("connection", (socket) => {
     console.log("room 네임스페이스 접속");
@@ -18,10 +23,28 @@ module.exports = (server, app) => {
     console.log("chat 네임스페이스 접속");
     socket.on("join", (data) => {
       socket.join(data); // 방 참가
+      socket.to(data).emit("join", {
+        user: "system",
+        chat: `${socket.request.session.color}님이 입장하셨습니다.`,
+      });
       //   socket.leave(data); // 방 떠남
     });
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       console.log("chat 네임스페이스 접속 해제");
+      const { referer } = socket.request.headers;
+      const roomId = new URL(referer).pathname.split("/").at(-1);
+      const currentRoom = chat.adapter.rooms.get(roomId);
+      const userCount = currentRoom?.size || 0;
+      if (userCount === 0) {
+        await removeRoom(roomId);
+        room.emit("removeRoom", roomId);
+        console.log("방 제거 요청 성공");
+      } else {
+        socket.to(roomId).emit("exit", {
+          user: "system",
+          chat: `${socket.request.session.color}님이 퇴장하셨습니다.`,
+        });
+      }
     });
   });
 

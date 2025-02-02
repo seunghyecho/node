@@ -5,12 +5,12 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const nunjucks = require("nunjucks");
 const dotenv = require("dotenv");
-const connect = require("./schemas");
 const ColorHash = require("color-hash").default;
-dotenv.config();
 
+dotenv.config();
 const webSocket = require("./socket"); // 웹소켓
 const indexRouter = require("./routes");
+const connect = require("./schemas");
 
 const app = express();
 app.set("port", process.env.PORT || 8005);
@@ -21,22 +21,23 @@ nunjucks.configure("views", {
 });
 connect();
 
+const sessionMiddleware = session({
+  resave: false,
+  saveUninitialized: false,
+  secret: process.env.COOKIE_SECRET,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+  },
+});
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/gif", express.static(path.join(__dirname, "uploads"))); // gif 주소로 uploads 폴더에 접근할 수 있음(9장)
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-    },
-  })
-);
+app.use(sessionMiddleware);
+
 app.use((req, res, next) => {
   if (!req.session.color) {
     const colorHash = new ColorHash();
@@ -65,4 +66,4 @@ const server = app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기중");
 });
 
-webSocket(server, app); // 웹소켓 서버 연결
+webSocket(server, app, sessionMiddleware); // 웹소켓 서버 연결

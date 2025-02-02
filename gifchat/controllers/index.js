@@ -1,6 +1,6 @@
 const Room = require("../schemas/room");
 const Chat = require("../schemas/chat");
-
+const { removeRoom: removeRoomService } = require("../services");
 exports.renderMain = async (req, res, next) => {
   try {
     const rooms = await Room.find({});
@@ -50,7 +50,13 @@ exports.enterRoom = async (req, res, next) => {
     if (room.max <= rooms.get(req.params.id)?.size) {
       return res.redirect("/?error=허용 인원을 초과했습니다.");
     }
-    res.render("chat", { title: "GIF 채팅방 생성" });
+    const chats = await Chat.find({ room: room._id }).sort("createdAt");
+    res.render("chat", {
+      title: "GIF 채팅방 생성",
+      chats,
+      room,
+      user: req.session.color,
+    });
   } catch (error) {
     console.error(error);
     next(error);
@@ -59,8 +65,39 @@ exports.enterRoom = async (req, res, next) => {
 
 exports.removeRoom = async (req, res, next) => {
   try {
-    await Room.remove({ _id: req.params.id });
-    await Chat.remove({ room: req.params.id });
+    // await Room.remove({ _id: req.params.id });
+    // await Chat.remove({ room: req.params.id });
+    await removeRoomService(req.params.id);
+    res.send("ok");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.sendChat = async (req, res, next) => {
+  try {
+    const chat = await Chat.create({
+      room: req.params.id,
+      user: req.session.color,
+      chat: req.body.chat,
+    });
+    req.app.get("io").of("/chat").to(req.params.id).emit("chat", chat); // 실시간 전송
+    res.send("ok");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.sendGif = async (req, res, next) => {
+  try {
+    const chat = await Chat.create({
+      room: req.params.id,
+      user: req.session.color,
+      gif: req.file.filename, // 파일 이름만 저장
+    });
+    req.app.get("io").of("/chat").to(req.params.id).emit("chat", chat); // 실시간 전송
     res.send("ok");
   } catch (error) {
     console.error(error);
