@@ -5,8 +5,10 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const nunjucks = require("nunjucks");
 const dotenv = require("dotenv");
-
+const connect = require("./schemas");
+const ColorHash = require("color-hash").default;
 dotenv.config();
+
 const webSocket = require("./socket"); // 웹소켓
 const indexRouter = require("./routes");
 
@@ -17,6 +19,7 @@ nunjucks.configure("views", {
   express: app,
   watch: true,
 });
+connect();
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
@@ -34,6 +37,14 @@ app.use(
     },
   })
 );
+app.use((req, res, next) => {
+  if (!req.session.color) {
+    const colorHash = new ColorHash();
+    req.session.color = colorHash.hex(req.sessionID); // 세션에 컬러를 저장함
+    console.log(req.session.color, req.sessionID); // 글자색을 사람을 구별할 수 있음
+  }
+  next();
+});
 
 app.use("/", indexRouter);
 
@@ -54,4 +65,4 @@ const server = app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기중");
 });
 
-webSocket(server); // 웹소켓 서버 연결
+webSocket(server, app); // 웹소켓 서버 연결

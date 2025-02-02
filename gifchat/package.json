@@ -11,11 +11,14 @@
   "license": "ISC",
   "description": "GIF 웹소켓 채팅방",
   "dependencies": {
+    "color-hash": "^2.0.2",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "mongoose": "^8.9.6",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "nunjucks": "^3.2.4",
     "socket.io": "^4.8.1",
     "ws": "^8.18.0"
