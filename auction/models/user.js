@@ -36,7 +36,7 @@ class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.hasMany(db.Auction);
+    db.User.hasMany(db.Auction); // 사용자가 입찰을 여러번 할 수 있다
   }
 }
 

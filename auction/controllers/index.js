@@ -129,7 +129,7 @@ exports.bid = async (req, res, next) => {
       return res.status(403).send("경매가 이미 종료되었습니다");
     }
     if (good.Auction?.[0]?.bid >= bid) {
-      // DESC 내림차순 했기 때문에 기준 입찰가 0 으로 설정
+      // 0번째가 이전 가장 높은 입찰가, DESC 내림차순 했기 때문에 기준 입찰가 0 번째로 설정
       return res.status(403).send("이전 입찰가보다 높아야 합니다");
     }
     const result = await Auction.create({

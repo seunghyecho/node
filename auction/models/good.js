@@ -31,9 +31,9 @@ class Good extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Good.belongsTo(db.User, { as: "Owner" });
-    db.Good.belongsTo(db.User, { as: "Sold" });
-    db.Good.hasMany(db.Auction);
+    db.Good.belongsTo(db.User, { as: "Owner" }); // 물건의 주인
+    db.Good.belongsTo(db.User, { as: "Sold" }); // 물건을 낙찰받은 사람
+    db.Good.hasMany(db.Auction); // 물건에 대해서 입찰이 여러번 있을 수 있음
   }
 }
 
