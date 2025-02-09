@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
-const { Good, Auction, User } = require("../models");
+const schedule = require("node-schedule");
+const { Good, Auction, User, sequelize } = require("../models");
 
 exports.renderMain = async (req, res, next) => {
   try {
@@ -32,11 +33,34 @@ exports.renderGood = (req, res) => {
 exports.createGood = async (req, res, next) => {
   try {
     const { name, price } = req.body;
-    await Good.create({
+    const good = await Good.create({
       OwnerId: req.user.id,
       name,
       img: req.file.filename,
       price,
+    });
+
+    const end = new Date();
+    end.setDate(end.getDate() + 1); // 하루 뒤
+    const job = schedule.scheduleJob(end, async () => {
+      const success = await Auction.findOne({
+        where: { GoodId: good.id },
+        order: [["bid", "DESC"]],
+      });
+      await good.setSold(success.UserId);
+      await User.update(
+        {
+          money: sequelize.literal(`money - ${success.bid}`),
+          // SET money = money - 1000000
+        },
+        {
+          where: { id: success.UserId },
+        }
+      );
+    });
+    job.on("error", console.error);
+    job.on("success", () => {
+      console.log(`${good.id} 스케줄링 성공`);
     });
     res.redirect("/");
   } catch (error) {
@@ -120,6 +144,20 @@ exports.bid = async (req, res, next) => {
       nick: req.user.nick,
     });
     return res.send("ok");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.renderList = async (req, res, next) => {
+  try {
+    const goods = await Good.findAll({
+      where: { SoldId: req.user.id },
+      include: { model: Auction },
+      order: [[{ model: Auction }, "bid", "DESC"]], // 낙찰가 보여주기 위한 목적
+    });
+    res.render("list", { title: "낙찰 목록 - NodeAuction", goods });
   } catch (error) {
     console.error(error);
     next(error);
