@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Good } = require("../models");
+const { Good, Auction, User } = require("../models");
 
 exports.renderMain = async (req, res, next) => {
   try {
@@ -39,6 +39,87 @@ exports.createGood = async (req, res, next) => {
       price,
     });
     res.redirect("/");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.renderAuction = async (req, res, next) => {
+  try {
+    // 1. good, auction 각각 호출
+    // const good = await Good.findOne({
+    //   where: { id: req.params.id },
+    //   include: {
+    //     model: User,
+    //     as: "Owner",
+    //   },
+    // });
+    // const auction = await Auction.findAll({
+    //   where: { GoodId: req.params.id },
+    //   include: { model: User },
+    //   order: [["bid", "ASC"]],
+    // });
+
+    // 2. good, auction 한번에 호출
+    const [good, auction] = await Promise.all([
+      Good.findOne({
+        where: { id: req.params.id },
+        include: {
+          model: User,
+          as: "Owner",
+        },
+      }),
+      Auction.findAll({
+        where: { GoodId: req.params.id },
+        include: { model: User },
+        order: [["bid", "ASC"]],
+      }),
+    ]);
+    res.render("auction", {
+      title: `${good.name} - NodeAuction`,
+      good,
+      auction,
+    });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+exports.bid = async (req, res, next) => {
+  try {
+    const { bid, msg } = req.body;
+    const good = await Good.findOne({
+      where: { id: req.params.id },
+      include: { model: Auction },
+      order: [[{ model: Auction }, "bid", "DESC"]], // include 된 애의 정렬
+    });
+
+    if (!good) {
+      return res.status(404).send("해당 상품은 존재하지 않습니다");
+    }
+    if (good.price >= bid) {
+      return res.status(403).send("시장 가격보다 높게 입찰해야 합니다");
+    }
+    if (new Date(good.createdAt).valueOf() + 24 * 60 * 60 * 1000 < new Date()) {
+      return res.status(403).send("경매가 이미 종료되었습니다");
+    }
+    if (good.Auction?.[0]?.bid >= bid) {
+      // DESC 내림차순 했기 때문에 기준 입찰가 0 으로 설정
+      return res.status(403).send("이전 입찰가보다 높아야 합니다");
+    }
+    const result = await Auction.create({
+      bid,
+      msg,
+      UserId: req.user.id,
+      GoodId: req.params.id,
+    });
+    req.app.get("io").to(req.params.id).emit("bid", {
+      bid: result.bid,
+      msg: result.msg,
+      nick: req.user.nick,
+    });
+    return res.send("ok");
   } catch (error) {
     console.error(error);
     next(error);
