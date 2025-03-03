@@ -5,13 +5,10 @@ const connect = () => {
     mongoose.set("debug", true);
   }
   mongoose
-    .connect(
-      `mongodb://${process.env.MONGO_ID}:${process.env.MONGO_PASSWORD}@localhost:27017/admin`,
-      {
-        dbName: "gifchat",
-        useNewUrlParser: true,
-      }
-    )
+    .connect(`${process.env.MONGO_URI}`, {
+      dbName: "gifchat",
+      useNewUrlParser: true,
+    })
     .then(() => {
       console.log("몽고디비 연결 성공");
     })

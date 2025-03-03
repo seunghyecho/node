@@ -5,7 +5,7 @@ const connect = () => {
     mongoose.set("debug", true);
   }
   mongoose
-    .connect("mongodb://root:rkawk1213@localhost:27017/admin", {
+    .connect(`${process.env.MONGO_URI}`, {
       dbName: "nodejs",
     })
     .then(() => {
