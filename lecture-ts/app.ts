@@ -1,4 +1,4 @@
-import express from "express";
+import express, { ErrorRequestHandler } from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import path from "path";
@@ -59,12 +59,13 @@ app.use("/post", postRouter);
 app.use("/user", userRouter);
 
 app.use((req, res, next) => {
-  const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
+  // const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
+  const error = new Error("Not Found") as Error & { status?: number }; // as를 사용한 타입 단언 적용
   error.status = 404;
   next(error);
 });
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.error(err);
   res.locals.message = err.message;
   res.locals.error = process.env.NODE_ENV !== "production" ? err : {};

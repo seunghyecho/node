@@ -5,7 +5,8 @@ import User from "../models/user";
 
 export default () => {
   passport.serializeUser((user, done) => {
-    done(null, user.id);
+    const reqUser = user as User;
+    done(null, reqUser?.id);
   });
 
   passport.deserializeUser((id: number, done) => {

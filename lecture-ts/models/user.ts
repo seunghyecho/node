@@ -3,53 +3,89 @@ import Sequelize, {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  DataTypes,
+  BelongsToManyAddAssociationMixin,
+  NonAttribute,
 } from "sequelize";
-import User from "./user";
-import Hashtag from "./hashtag";
+import Post from "./post";
 
-class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
-  declare content: string;
-  declare img: string;
+  declare email: string;
+  declare nick: string;
+  declare password: CreationOptional<string>;
+  declare provider: CreationOptional<string>;
+  declare snsId: CreationOptional<string>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+  declare deletedAt: CreationOptional<Date>;
+
+  // declare Followers?: NonAttribute<User[]>;
+  declare Followers?: User[];
+  declare Followings?: NonAttribute<User[]>;
+
+  declare addFollowing: BelongsToManyAddAssociationMixin<User, number>;
 
   static initiate(sequelize: Sequelize.Sequelize) {
-    Post.init(
+    User.init(
       {
         id: {
           type: Sequelize.INTEGER,
           primaryKey: true,
           autoIncrement: true,
         },
-        content: {
-          type: Sequelize.STRING(140),
+        email: {
+          type: Sequelize.STRING(40),
+          allowNull: true,
+          unique: true,
+        },
+        nick: {
+          type: Sequelize.STRING(15),
           allowNull: false,
         },
-        img: {
-          type: Sequelize.STRING(200),
+        password: {
+          type: Sequelize.STRING(100),
+          allowNull: true,
+        },
+        provider: {
+          type: Sequelize.ENUM("local", "kakao"),
+          allowNull: false,
+          defaultValue: "local",
+        },
+        snsId: {
+          type: Sequelize.STRING(30),
           allowNull: true,
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
+        deletedAt: Sequelize.DATE,
       },
       {
         sequelize,
         timestamps: true,
         underscored: false,
-        modelName: "Post",
-        tableName: "posts",
-        paranoid: false,
-        charset: "utf8mb4",
-        collate: "utf8mb4_general_ci",
+        modelName: "User",
+        tableName: "users",
+        paranoid: true,
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
     );
   }
 
   static associate() {
-    Post.belongsTo(User);
-    Post.belongsToMany(Hashtag, { through: "PostHashtag" });
+    // User.hasMany(Post);
+    User.belongsToMany(User, {
+      foreignKey: "followingId",
+      as: "Followers",
+      through: "Follow",
+    });
+    User.belongsToMany(User, {
+      foreignKey: "followerId",
+      as: "Followings",
+      through: "Follow",
+    });
   }
 }
 
-export default Post;
+export default User;

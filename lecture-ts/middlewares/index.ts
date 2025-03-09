@@ -1,4 +1,5 @@
-exports.isLoggedIn = (req, res, next) => {
+import { RequestHandler } from "express";
+const isLoggedIn: RequestHandler = (req, res, next) => {
   if (req.isAuthenticated()) {
     // passport 통해서 로그인 함
     next();
@@ -6,7 +7,7 @@ exports.isLoggedIn = (req, res, next) => {
     res.status(403).send("로그인 필요");
   }
 };
-exports.isNotLoggedIn = (req, res, next) => {
+const isNotLoggedIn: RequestHandler = (req, res, next) => {
   if (!req.isAuthenticated()) {
     next();
   } else {
@@ -14,3 +15,5 @@ exports.isNotLoggedIn = (req, res, next) => {
     res.redirect(`/?error=${message}`); // localhost:8001?error=메세지
   }
 };
+
+export { isLoggedIn, isNotLoggedIn };
